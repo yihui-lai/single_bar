@@ -1,4 +1,5 @@
-#Single Bar
+# Single Bar
+
 GEANT4-based simulation of a single bar for DualReadout purpose.
 
 ## Installing
