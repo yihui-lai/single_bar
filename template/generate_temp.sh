@@ -1,5 +1,5 @@
 #!/bin/bash
-mergefile="merge.sh"
+#mergefile="merge.sh"
 main_direc=$PWD/..
 zA="10"
 for zlength in 100
@@ -27,7 +27,7 @@ fi
 temp_name="${store_place}/template_${zangle}degree_${zlength}mm.cfg"
 source temp_template.sh $zangle $zlength $zA 6 > ${temp_name}
 ex_name="${store_place}/ex_${energy}GeV_N${number}_${Particle}_${zangle}degree_${zlength}mm.sh"
-echo "hadd -f ${Particle}_${energy}GeV_N${number}_${special}.root ${Particle}_${energy}GeV_N${number}_${special}/*root" >> $mergefile
+#echo "hadd -f ${Particle}_${energy}GeV_N${number}_${special}.root ${Particle}_${energy}GeV_N${number}_${special}/*root" >> $mergefile
 if [ -f ${ex_name} ]; then
    rm ${ex_name}
 fi
