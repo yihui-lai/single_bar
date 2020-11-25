@@ -1,0 +1,81 @@
+/run/verbose 2
+/run/initialize
+/control/execute vis.mac
+/vis/open OGL 2400x600-0+0
+/vis/sceneHandler/create OGL
+/vis/viewer/create ! ! 2400x600-0+0
+/vis/viewer/refresh
+/vis/viewer/set/autoRefresh false
+/vis/drawVolume
+/vis/scene/create
+/vis/scene/add/volume world -1 -1 none m 0 0 0 0 0 0
+/vis/sceneHandler/attach
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/viewpointThetaPhi 270 0 deg
+/vis/viewer/zoomTo 40
+/vis/viewer/set/style surface
+/vis/viewer/set/background white
+/vis/scene/add/trajectories smooth
+/tracking/storeTrajectory 2
+/vis/scene/notifyHandlers
+/vis/scene/add/hits
+/vis/scene/notifyHandlers
+/vis/filtering/trajectories/create/particleFilter
+/vis/filtering/trajectories/particleFilter-0/add pi-
+/vis/scene/notifyHandlers scene-0
+/vis/filtering/trajectories/particleFilter-0/add mu-
+/vis/scene/notifyHandlers scene-0
+/vis/filtering/trajectories/particleFilter-0/add opticalphoton
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set geantino red
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set e- red
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set pi- brown
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set mu- red
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set gamma yellow
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton cyan
+/vis/scene/notifyHandlers scene-0
+/vis/scene/endOfEventAction accumulate 1
+/vis/viewer/set/autoRefresh true
+/vis/viewer/refresh
+/units/list
+/gps/energy 120 GeV
+/gps/particle pi-
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/centre 0 0 -10 mm
+/gps/direction 0 0 1
+/control/execute gui.mac
+/gui/addMenu file File
+/gui/addButton file Quit exit
+/gui/addMenu run Run
+/gui/addButton run "beamOn 1" "/run/beamOn 1"
+/gui/addButton run run1 "/control/execute run1.mac"
+/gui/addMenu gun Gun
+/gui/addButton gun "50 MeV" "/gps/energy 50 MeV"
+/gui/addButton gun "1 GeV" "/gps/energy 1 GeV"
+/gui/addButton gun "10 GeV" "/gps/energy 10 GeV"
+/gui/addButton gun "e-" "/gps/particle e-"
+/gui/addButton gun "mu-" "/gps/particle mu-"
+/gui/addButton gun "pi0" "/gps/particle pi0"
+/gui/addButton gun "pi+" "/gps/particle pi+"
+/gui/addButton gun "neutron" "/gps/particle neutron"
+/gui/addButton gun "proton" "/gps/particle proton"
+/gui/addMenu vis Vis
+/gui/addButton vis DAWNFILE "/control/execute visTutor/exN03Vis0.mac"
+/gui/addButton vis OpenInventor "/control/execute visTutor/exN03Vis5.mac"
+/gui/addButton vis TimeSlicing "/control/execute visTutor/exN03Vis12.mac"
+/gui/addButton vis EmShower "/control/execute visTutor/exN03Vis13.mac"
+/gui/addMenu viewer Viewer
+/gui/addButton viewer "Set style surface" "/vis/viewer/set/style surface"
+/gui/addButton viewer "Set style wireframe" "/vis/viewer/set/style wireframe"
+/gui/addButton viewer "Refresh viewer" "/vis/viewer/refresh"
+/gui/addButton viewer "Update viewer (interaction or end-of-file)" "/vis/viewer/update"
+/gui/addButton viewer "Flush viewer (= refresh + update)" "/vis/viewer/flush"
+/gui/addButton viewer "Update scene" "/vis/scene/notifyHandlers"
+/run/printProgress 1

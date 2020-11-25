@@ -1,0 +1,12 @@
+Step 1: 
+source g4env.sh
+
+Step 2: 
+cmake -DGeant4_DIR=/cvmfs/geant4.cern.ch/geant4/10.5/x86_64-slc6-gcc63-opt/lib64/GEANT4-10.5.0
+
+Step 3: 
+cmake --build .
+
+Step 4: 
+./CEPC_CaloTiming -c template.cfg -u Xm  
+./CEPC_CaloTiming -c template.cfg -m run.mac -o test
