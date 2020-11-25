@@ -13,6 +13,7 @@ cmake --build .
 
 ## Single event running
 For the interactive runing:
+
 Check the geometry through a detector viewing window
 ```bash
 ./CEPC_CaloTiming -c template.cfg -u Xm  
