@@ -189,20 +189,20 @@ G4Material *MyMaterials::silicone()
   G4Element *H = new G4Element("Hydrogen", "H", z = 1., a = 1.01 * g / mole);
   G4Element *C = new G4Element("Carbon", "C", z = 6., a = 12.01 * g / mole);
 
-  G4Material *silicone = new G4Material("Silicone", 0.965 * g / cm3, 4);
-  silicone->AddElement(C, 2);
-  silicone->AddElement(H, 6);
-  silicone->AddElement(O, 1);
-  silicone->AddElement(Si, 1);
+  G4Material *material = new G4Material("Silicone", 0.965 * g / cm3, 4);
+  material->AddElement(C, 2);
+  material->AddElement(H, 6);
+  material->AddElement(O, 1);
+  material->AddElement(Si, 1);
 
   const G4int nEntries_RI = 2;
   G4double PhotonEnergy_RI[nEntries_RI] = {1 * eV, 6.00 * eV};
   G4double RefractiveIndex[nEntries_RI] = {1.57, 1.57};
   G4MaterialPropertiesTable *myMPT = new G4MaterialPropertiesTable();
   myMPT->AddProperty("RINDEX", PhotonEnergy_RI, RefractiveIndex, nEntries_RI);
-  silicone->SetMaterialPropertiesTable(myMPT);
+  material->SetMaterialPropertiesTable(myMPT);
 
-  return silicone;
+  return material;
 }
 
 G4Material *MyMaterials::PlasticO2WLS() //O2 - orange green-to-wls
@@ -1594,7 +1594,7 @@ G4Material *MyMaterials::PWO()
   G4Element *W = new G4Element("Tungsten", "W", z = 74., a = 183.85 * g / mole);
   G4Element *O = new G4Element("Oxygen", "O", z = 8., a = 16.00 * g / mole);
 
-  G4Material *mat = new G4Material("PWO", density = 8.28 * g / cm3, 3);
+  G4Material *mat = new G4Material("PWO4", density = 8.28 * g / cm3, 3);
   mat->AddElement(Pb, 1);
   mat->AddElement(W, 1);
   mat->AddElement(O, 4);
@@ -1764,7 +1764,7 @@ G4Material *MyMaterials::PWO()
 */
 
   //in DREAM paper
-  const G4int nEntries_ABS = 63;
+  const G4int nEntries_ABS = 35;
   G4double Absorption[nEntries_ABS] = {0 * cm, 0.02 * cm, 2.01 * cm, 4 * cm, 4.023302971 * cm, 4.255916788 * cm,
                                        4.523924776 * cm, 4.815007415 * cm, 5.160917405 * cm, 5.560374547 * cm, 6.651855202 * cm,
                                        7.330625889 * cm, 8.593280055 * cm, 9.708078092 * cm, 11.15523627 * cm,
