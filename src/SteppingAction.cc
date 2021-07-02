@@ -79,12 +79,7 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
 
   G4Track *theTrack = theStep->GetTrack();
 
-  //  const G4ThreeVector& theTrackDirection = theTrack->GetMomentumDirection();
-  //  const G4ThreeVector& theTrackVertexDirection = theTrack->GetVertexMomentumDirection();
-  //  TrackInformation* theTrackInfo = (TrackInformation*)(theTrack->GetUserInformation());
-
   G4ParticleDefinition *particleType = theTrack->GetDefinition();
-  //G4int trackID = theTrack->GetTrackID();
 
   G4StepPoint *thePrePoint = theStep->GetPreStepPoint();
   G4StepPoint *thePostPoint = theStep->GetPostStepPoint();
@@ -98,8 +93,6 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
   if (thePostPV)
     thePostPVName = thePostPV->GetName();
 
-  //  G4VSolid* thePreS = thePrePV->GetLogicalVolume()->GetSolid();
-
   G4int nStep = theTrack->GetCurrentStepNumber();
   G4int TrPDGid = theTrack->GetDefinition()->GetPDGEncoding();
 
@@ -111,108 +104,10 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
   G4double global_y = thePrePosition.y() / mm;
   G4double global_z = thePrePosition.z() / mm;
 
-  //if(thePrePVName.contains("ecalDetP_rr")) cout<<"z "<<global_z<<endl;
-
   G4double energy = theStep->GetTotalEnergyDeposit();
-  G4double energyIon = 0;
-
-  double weight = 1.;
-  double birkCut = 0.1;
-  double charge = thePrePoint->GetCharge();
-  if (charge != 0. && theStep->GetStepLength() > 0)
-  {
-    const G4Material *matbirk = thePrePoint->GetMaterial();
-    double density = matbirk->GetDensity();
-    double dedx = theStep->GetTotalEnergyDeposit() / theStep->GetStepLength();
-    double rkb = 0.03333 * g / (MeV * cm2) / density;
-    if (dedx > 0)
-    {
-      weight = 1. - 0.253694 * log(rkb * dedx);
-      if (weight < birkCut)
-        weight = birkCut;
-      else if (weight > 1.)
-        weight = 1.;
-    }
-  }
-  bool use_birk = false;
-  bool time_cut = false;
-  if (use_birk)
-  {
-    energyIon = (energy - theStep->GetNonIonizingEnergyDeposit()) * weight;
-  }
-  else
-  {
-    energyIon = (energy - theStep->GetNonIonizingEnergyDeposit());
-  }
-  if (time_cut)
-  {
-    if (((thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3.) > 75)
-      energyIon = 0;
-  }
-  //------------- categorize the particles generated -------------
-  G4double energyElec = 0.;
-  //total energy by particle types
-  G4double energyPion_n = 0.;
-  G4double energyPositron = 0.;
-  G4double energyElectron = 0.;
-  G4double energyPhoton = 0.;
-  G4double energyPion_p = 0.;
-  G4double energyKion = 0.;
-  G4double energyNeutron = 0.;
-  G4double energyProton = 0.;
-  //ion energy by particle types
-  G4double energyIonPion_n = 0.;
-  G4double energyIonPositron = 0.;
-  G4double energyIonElectron = 0.;
-  G4double energyIonPhoton = 0.;
-  G4double energyIonPion_p = 0.;
-  G4double energyIonKion = 0.;
-  G4double energyIonNeutron = 0.;
-  G4double energyIonProton = 0.;
-
-  if (TrPDGid == (-211))
-  {
-    energyPion_n = energy;
-    energyIonPion_n = energyIon;
-  }
-  else if (TrPDGid == (-11))
-  {
-    energyPositron = energy;
-    energyIonPositron = energyIon;
-  }
-  else if (TrPDGid == (11))
-  {
-    energyElectron = energy;
-    energyIonElectron = energyIon;
-  }
-  else if (TrPDGid == (22))
-  {
-    energyPhoton = energy;
-    energyIonPhoton = energyIon;
-  }
-  else if (TrPDGid == (211))
-  {
-    energyPion_p = energy;
-    energyIonPion_p = energyIon;
-  }
-  else if (TrPDGid == (321))
-  {
-    energyKion = energy;
-    energyIonKion = energyIon;
-  }
-  else if (TrPDGid == (2112))
-  {
-    energyNeutron = energy;
-    energyIonNeutron = energyIon;
-  }
-  else if (TrPDGid == (2212))
-  {
-    energyProton = energy;
-    energyIonProton = energyIon;
-  }
-  energyElec = energyIonPositron + energyIonElectron;
-
-  //std::cout<<"TrPDGid energy energyIon enegyElec are "<<TrPDGid<<" "<<energy<<" "<<energyIon<<" "<<energyElec<<std::endl;
+  G4double energyIon = energy - theStep->GetNonIonizingEnergyDeposit();
+  G4double energyElec = 0;
+  if (abs(TrPDGid) == 11) energyElec = energyIon;
 
   CreateTree::Instance()->depositedEnergyTotal += energy / GeV;
   CreateTree::Instance()->depositedIonEnergyTotal += energyIon / GeV;
@@ -238,71 +133,19 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
       //only consider Cerenkov and Scintillation
       if ((processName == "Cerenkov") || processName == "Scintillation")
       {
-        //Not use default sensitive detector
-        /*
-        G4OpBoundaryProcessStatus boundaryStatus = Undefined;
-        static G4OpBoundaryProcess *boundary = NULL;
-        if (!boundary)
-        {
-          G4ProcessManager *pm = theStep->GetTrack()->GetDefinition()->GetProcessManager();
-          G4int nprocesses = pm->GetProcessListLength();
-          G4ProcessVector *pv = pm->GetProcessList();
-          G4int i;
-          for (i = 0; i < nprocesses; i++)
-          {
-            if ((*pv)[i]->GetProcessName() == "OpBoundary")
-            {
-              boundary = (G4OpBoundaryProcess *)(*pv)[i];
-              break;
-            }
-          }
-        }
-        boundaryStatus = boundary->GetStatus();
-        switch (boundaryStatus)
-        {
-        case Detection:
-        {
-          G4EventManager::GetEventManager()->KeepTheCurrentEvent();
-          G4SDManager *SDman = G4SDManager::GetSDMpointer();
-          DR_PMTSD *pmtSD = (DR_PMTSD *)SDman->FindSensitiveDetector("/DR_Det");
-          if (pmtSD)
-          {
-            if ((thePrePVName.contains("ecalDetP_") || thePostPVName.contains("ecalDetP_")))
-            {
-              // std::cout << "detected pre"<<thePrePVName<<" post " << thePostPVName << std::endl;
-              //cout<<"get one. yes!"<<endl;
-              CreateTree::Instance()->tot_phot_cer_should_det4 += 1;
-
-              //      const G4ThreeVector pos_end   = trajectory->GetPoint( j )->GetPosition();
-              //std::cout<<theTrack->GetVertexPosition()<<std::endl;
-              if (processName == "Scintillation")
-                CreateTree::Instance()->h_photon_2D_receive_Scin->Fill(theTrack->GetVertexPosition()[2], sqrt(theTrack->GetVertexPosition()[0] * theTrack->GetVertexPosition()[0] + theTrack->GetVertexPosition()[1] * theTrack->GetVertexPosition()[1]));
-              if (processName == "Cerenkov")
-                CreateTree::Instance()->h_photon_2D_receive_Ceren->Fill(theTrack->GetVertexPosition()[2], sqrt(theTrack->GetVertexPosition()[0] * theTrack->GetVertexPosition()[0] + theTrack->GetVertexPosition()[1] * theTrack->GetVertexPosition()[1]));
-              pmtSD->ProcessHits_constStep(theStep, NULL);
-              theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-            }
-          }
-          break;
-        }
-        default:
-          break;
-        }
-        */
-
         //if reach the detector's window 
         if ((thePostPVName.contains("ecalDetWindowP_ff_")))
         {
           if (processName == "Scintillation")
           {
-            CreateTree::Instance()->h_photon_2D_receive_Scin->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
-            CreateTree::Instance()->h_phot_lambda_ECAL_f_Scin->Fill(photWL);
+            //CreateTree::Instance()->h_photon_2D_receive_Scin->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
+            CreateTree::Instance()->h_phot_lambda_ECAL_f_collect_Scin->Fill(photWL);
             CreateTree::Instance()->SDdetected_ff_S++;
           }
           if (processName == "Cerenkov")
           {
-            CreateTree::Instance()->h_photon_2D_receive_Ceren->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
-            CreateTree::Instance()->h_phot_lambda_ECAL_f_Ceren->Fill(photWL);
+            //CreateTree::Instance()->h_photon_2D_receive_Ceren->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
+            CreateTree::Instance()->h_phot_lambda_ECAL_f_collect_Ceren->Fill(photWL);
             CreateTree::Instance()->SDdetected_ff_C++;
           }
           theTrack->SetTrackStatus(fKillTrackAndSecondaries);
@@ -311,14 +154,14 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
         {
           if (processName == "Scintillation")
           {
-            CreateTree::Instance()->h_photon_2D_receive_Scin->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
-            CreateTree::Instance()->h_phot_lambda_ECAL_r_Scin->Fill(photWL);
+            //CreateTree::Instance()->h_photon_2D_receive_Scin->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
+            CreateTree::Instance()->h_phot_lambda_ECAL_r_collect_Scin->Fill(photWL);
             CreateTree::Instance()->SDdetected_rr_S++;
           }
           if (processName == "Cerenkov")
           {
-            CreateTree::Instance()->h_photon_2D_receive_Ceren->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
-            CreateTree::Instance()->h_phot_lambda_ECAL_r_Ceren->Fill(photWL);
+            //CreateTree::Instance()->h_photon_2D_receive_Ceren->Fill(theTrack->GetVertexPosition()[1], theTrack->GetVertexPosition()[2]);
+            CreateTree::Instance()->h_phot_lambda_ECAL_r_collect_Ceren->Fill(photWL);
             CreateTree::Instance()->SDdetected_rr_C++;
           }
           theTrack->SetTrackStatus(fKillTrackAndSecondaries);
@@ -362,10 +205,10 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
         {
           //theTrack->GetDefinition()->GetParticleName()
           //cout<<"position x:"<<global_x<<"  z: "<<global_z<<endl;
-          if (processName == "Scintillation")
-            CreateTree::Instance()->h_photon_2D_produce_Scin->Fill(global_y, global_z);
-          if (processName == "Cerenkov")
-            CreateTree::Instance()->h_photon_2D_produce_Ceren->Fill(global_y, global_z);
+          //if (processName == "Scintillation")
+          //  CreateTree::Instance()->h_photon_2D_produce_Scin->Fill(global_y, global_z);
+          //if (processName == "Cerenkov")
+          //  CreateTree::Instance()->h_photon_2D_produce_Ceren->Fill(global_y, global_z);
           if (thePrePVName.contains("ecalCrystalP_f"))
           {
             if (processName == "Scintillation")
@@ -401,7 +244,6 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
       }
       else
       {
-
         theTrack->SetTrackStatus(fKillTrackAndSecondaries);
       }
     }
@@ -501,353 +343,6 @@ void SteppingAction::UserSteppingAction(const G4Step *theStep)
     }
 
     //ecal
-    int chn = 64;
-    if (thePrePVName.contains("ecalCrystalP_f"))
-    {
-      for (int iCh = 0; iCh < chn; iCh++)
-      {
-        if (thePrePVName.contains(Form("_%d", iCh)))
-        {
-          CreateTree::Instance()->Edep_ECAL_f_ch[iCh] += energy / GeV;
-          CreateTree::Instance()->IonEdep_ECAL_f_ch[iCh] += energyIon / GeV;
-          //          CreateTree::Instance()->ElecEdep_ECAL_f_ch[iCh] += energyElec / GeV;
-        }
-      }
-
-      if (thePrePVName.contains("ecalCrystalP_f_absorb"))
-      {
-
-        CreateTree::Instance()->depositedEnergyECAL_f[0] += energy / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_f[0] += energyIon / GeV;
-        CreateTree::Instance()->depositedElecEnergyECAL_f[0] += energyElec / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[0] += energyPion_n / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[0] += energyIonPion_n / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[1] += energyPositron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[1] += energyIonPositron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[2] += energyElectron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[2] += energyIonElectron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[3] += energyPhoton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[3] += energyIonPhoton / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[4] += energyPion_p / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[4] += energyIonPion_p / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[5] += energyKion / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[5] += energyIonKion / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[6] += energyNeutron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[6] += energyIonNeutron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_f_particleID[7] += energyProton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_f_particleID[7] += energyIonProton / GeV;
-      }
-
-      if (thePrePVName.contains("ecalCrystalP_f_fiber_scinti"))
-      {
-        CreateTree::Instance()->depositedEnergyECAL_f[1] += energy / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_f[1] += energyIon / GeV;
-        CreateTree::Instance()->depositedElecEnergyECAL_f[1] += energyElec / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[0] += energyPion_n / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[0] += energyIonPion_n / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[1] += energyPositron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[1] += energyIonPositron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[2] += energyElectron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[2] += energyIonElectron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[3] += energyPhoton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[3] += energyIonPhoton / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[4] += energyPion_p / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[4] += energyIonPion_p / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[5] += energyKion / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[5] += energyIonKion / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[6] += energyNeutron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[6] += energyIonNeutron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_f_particleID[7] += energyProton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_f_particleID[7] += energyIonProton / GeV;
-        /*
-        for (int iCh = 0; iCh < chn; iCh++)
-        {
-          if (thePrePVName == Form("ecalCrystalP_f_fiber_scinti_%d", iCh))
-          {
-            CreateTree::Instance()->Edep_ECAL_f_scinti_ch[iCh] += energy / GeV;
-            CreateTree::Instance()->IonEdep_ECAL_f_scinti_ch[iCh] += energyIon / GeV;
-            CreateTree::Instance()->ElecEdep_ECAL_f_scinti_ch[iCh] += energyElec / GeV;
-          }
-        }*/
-      }
-
-      if (thePrePVName.contains("ecalCrystalP_f_fiber_cheren"))
-      {
-        CreateTree::Instance()->depositedEnergyECAL_f[2] += energy / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_f[2] += energyIon / GeV;
-        CreateTree::Instance()->depositedElecEnergyECAL_f[2] += energyElec / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[0] += energyPion_n / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[0] += energyIonPion_n / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[1] += energyPositron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[1] += energyIonPositron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[2] += energyElectron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[2] += energyIonElectron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[3] += energyPhoton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[3] += energyIonPhoton / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[4] += energyPion_p / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[4] += energyIonPion_p / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[5] += energyKion / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[5] += energyIonKion / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[6] += energyNeutron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[6] += energyIonNeutron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_f_particleID[7] += energyProton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_f_particleID[7] += energyIonProton / GeV;
-        /*
-        for (int iCh = 0; iCh < chn; iCh++)
-        {
-          if (thePrePVName == Form("ecalCrystalP_f_fiber_cherenp_%d", iCh) || thePrePVName == Form("ecalCrystalP_f_fiber_cherenc_%d", iCh))
-          {
-//            CreateTree::Instance()->Edep_ECAL_f_cheren_ch[iCh] += energy / GeV;
-//            CreateTree::Instance()->IonEdep_ECAL_f_cheren_ch[iCh] += energyIon / GeV;
-//            CreateTree::Instance()->ElecEdep_ECAL_f_cheren_ch[iCh] += energyElec / GeV;
-          }
-        }*/
-      }
-    }
-
-    if (thePrePVName.contains("ecalCrystalP_r"))
-    {
-      for (int iCh = 0; iCh < chn; iCh++)
-      {
-        if (thePrePVName.contains(Form("_%d", iCh)))
-        {
-          CreateTree::Instance()->Edep_ECAL_r_ch[iCh] += energy / GeV;
-          CreateTree::Instance()->IonEdep_ECAL_r_ch[iCh] += energyIon / GeV;
-          //          CreateTree::Instance()->ElecEdep_ECAL_r_ch[iCh] += energyElec / GeV;
-        }
-      }
-
-      if (thePrePVName.contains("ecalCrystalP_r_absorb"))
-      {
-        CreateTree::Instance()->depositedEnergyECAL_r[0] += energy / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_r[0] += energyIon / GeV;
-        CreateTree::Instance()->depositedElecEnergyECAL_r[0] += energyElec / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[0] += energyPion_n / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[0] += energyIonPion_n / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[1] += energyPositron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[1] += energyIonPositron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[2] += energyElectron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[2] += energyIonElectron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[3] += energyPhoton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[3] += energyIonPhoton / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[4] += energyPion_p / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[4] += energyIonPion_p / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[5] += energyKion / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[5] += energyIonKion / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[6] += energyNeutron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[6] += energyIonNeutron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_absorb_r_particleID[7] += energyProton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_absorb_r_particleID[7] += energyIonProton / GeV;
-      }
-
-      if (thePrePVName.contains("ecalCrystalP_r_fiber_scinti"))
-      {
-        CreateTree::Instance()->depositedEnergyECAL_r[1] += energy / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_r[1] += energyIon / GeV;
-        CreateTree::Instance()->depositedElecEnergyECAL_r[1] += energyElec / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[0] += energyPion_n / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[0] += energyIonPion_n / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[1] += energyPositron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[1] += energyIonPositron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[2] += energyElectron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[2] += energyIonElectron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[3] += energyPhoton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[3] += energyIonPhoton / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[4] += energyPion_p / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[4] += energyIonPion_p / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[5] += energyKion / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[5] += energyIonKion / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[6] += energyNeutron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[6] += energyIonNeutron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_scinti_r_particleID[7] += energyProton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_scinti_r_particleID[7] += energyIonProton / GeV;
-        /*for (int iCh = 0; iCh < chn; iCh++)
-        {
-          if (thePrePVName == Form("ecalCrystalP_r_fiber_scinti_%d", iCh))
-          {
-//            CreateTree::Instance()->Edep_ECAL_r_scinti_ch[iCh] += energy / GeV;
-//            CreateTree::Instance()->IonEdep_ECAL_r_scinti_ch[iCh] += energyIon / GeV;
-//            CreateTree::Instance()->ElecEdep_ECAL_r_scinti_ch[iCh] += energyElec / GeV;
-          }
-        }*/
-      }
-
-      if (thePrePVName.contains("ecalCrystalP_r_fiber_cheren"))
-      {
-        CreateTree::Instance()->depositedEnergyECAL_r[2] += energy / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_r[2] += energyIon / GeV;
-        CreateTree::Instance()->depositedElecEnergyECAL_r[2] += energyElec / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[0] += energyPion_n / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[0] += energyIonPion_n / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[1] += energyPositron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[1] += energyIonPositron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[2] += energyElectron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[2] += energyIonElectron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[3] += energyPhoton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[3] += energyIonPhoton / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[4] += energyPion_p / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[4] += energyIonPion_p / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[5] += energyKion / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[5] += energyIonKion / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[6] += energyNeutron / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[6] += energyIonNeutron / GeV;
-
-        CreateTree::Instance()->depositedEnergyECAL_cheren_r_particleID[7] += energyProton / GeV;
-        CreateTree::Instance()->depositedIonEnergyECAL_cheren_r_particleID[7] += energyIonProton / GeV;
-        /*for (int iCh = 0; iCh < chn; iCh++)
-        {
-          if (thePrePVName == Form("ecalCrystalP_r_fiber_cherenp_%d", iCh) || thePrePVName == Form("ecalCrystalP_r_fiber_cherenc_%d", iCh))
-          {
-//            CreateTree::Instance()->Edep_ECAL_r_cheren_ch[iCh] += energy / GeV;
-//            CreateTree::Instance()->IonEdep_ECAL_r_cheren_ch[iCh] += energyIon / GeV;
-//            CreateTree::Instance()->ElecEdep_ECAL_r_cheren_ch[iCh] += energyElec / GeV;
-          }
-        }*/
-      }
-    }
-    //    if (thePrePVName.contains("ecalCrystalL_f_absorb") || thePrePVName.contains("ecalCrystalL_r_absorb"))
-    if (thePrePVName.contains("ecalCrystalP_r_fiber_scinti") || thePrePVName.contains("ecalCrystalP_f_fiber_scinti"))
-    {
-
-      int iiZ, iiT;
-      if (global_z < 0)
-        iiZ = 0;
-      if (global_z > 5000)
-        iiZ = 2499;
-      if (global_z >= 0 && global_z < 5000)
-        iiZ = (global_z / 2);
-
-      if (((thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3) < 0)
-        iiT = 0;
-      if (((thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3) > 5)
-        iiT = 2499;
-      if (((thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3) >= 0 && ((thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3) < 5)
-        iiT = (((thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3) * 500);
-
-      //cout<<"iiZ = "<<iiZ<<" iiT = "<<iiT<<endl;
-
-      CreateTree::Instance()->E_Zdep_0to5000mm_total[iiZ] += energyIon / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Pion_n[iiZ] += energyIonPion_n / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Positron[iiZ] += energyIonPositron / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Electron[iiZ] += energyIonElectron / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Photon[iiZ] += energyIonPhoton / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Pion_p[iiZ] += energyIonPion_p / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Neutron[iiZ] += energyIonNeutron / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Kion[iiZ] += energyIonKion / GeV;
-      CreateTree::Instance()->E_Zdep_0to5000mm_Proton[iiZ] += energyIonProton / GeV;
-
-      CreateTree::Instance()->E_Tdep_0to5ns_total[iiT] += energyIon / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Pion_n[iiT] += energyIonPion_n / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Positron[iiT] += energyIonPositron / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Electron[iiT] += energyIonElectron / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Photon[iiT] += energyIonPhoton / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Pion_p[iiT] += energyIonPion_p / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Kion[iiT] += energyIonKion / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Neutron[iiT] += energyIonNeutron / GeV;
-      CreateTree::Instance()->E_Tdep_0to5ns_Proton[iiT] += energyIonProton / GeV;
-
-      /*
-      CreateTree::Instance()->h_parentID_Edep->Fill(TrPDGid, energy / GeV);
-      CreateTree::Instance()->h_time_z_st->Fill(global_z , thePrePoint->GetGlobalTime() / ns - 20 / 3., energy / GeV);
-      CreateTree::Instance()->h_time_z_mt->Fill(global_z , thePrePoint->GetGlobalTime() / ns - 20 / 3., energy / GeV);
-      CreateTree::Instance()->h_time_z_lt->Fill(global_z , thePrePoint->GetGlobalTime() / ns - 20 / 3., energy / GeV);
-
-      CreateTree::Instance()->h_localtime_z_st->Fill(global_z, (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-      CreateTree::Instance()->h_localtime_z_mt->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3., energy / GeV);
-      CreateTree::Instance()->h_localtime_z_lt->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3., energy / GeV);
-
-      if (TrPDGid == (-11))
-      {
-        CreateTree::Instance()->h_localtime_z_st_ep->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_mt_ep->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_lt_ep->Fill(global_z, (thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3., energy / GeV);
-      }
-      if (TrPDGid == (11))
-      {
-        CreateTree::Instance()->h_localtime_z_st_en->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_mt_en->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_lt_en->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z / 300. - 19 / 3., energy / GeV);
-      }
-      if (TrPDGid == (22))
-      {
-        CreateTree::Instance()->h_localtime_z_st_gamma->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_mt_gamma->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_lt_gamma->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-      }
-      if (TrPDGid == (2112))
-      {
-        CreateTree::Instance()->h_localtime_z_st_n->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_mt_n->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_lt_n->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-      }
-      if (TrPDGid == (2212))
-      {
-        CreateTree::Instance()->h_localtime_z_st_p->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_mt_p->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_lt_p->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-      }
-
-      if (TrPDGid == (-211))
-      {
-        CreateTree::Instance()->h_localtime_z_st_pin->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_mt_pin->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_lt_pin->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-      }
-      if (TrPDGid == (211))
-      {
-        CreateTree::Instance()->h_localtime_z_st_pip->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_mt_pip->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-        CreateTree::Instance()->h_localtime_z_lt_pip->Fill(global_z , (thePrePoint->GetGlobalTime() / ns) - global_z  / 300. - 19 / 3., energy / GeV);
-      }
-*/
-    }
 
     //hcal
     if (thePrePVName.contains("hcalTile_layer"))

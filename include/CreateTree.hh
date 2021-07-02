@@ -146,45 +146,20 @@ public:
   float Edep_Timing_f_ch[18];
   float Edep_Timing_r_ch[18];
 
-  float Edep_ECAL_f_ch[6400];
-  float Edep_ECAL_r_ch[6400];
-
-  float IonEdep_ECAL_f_ch[6400];
-  float IonEdep_ECAL_r_ch[6400];
-
-  float E_Zdep_0to5000mm_total[2500];
-  float E_Tdep_0to5ns_total[2500];
-  float E_Zdep_0to5000mm_Pion_n[2500];
-  float E_Tdep_0to5ns_Pion_n[2500];
-  float E_Zdep_0to5000mm_Positron[2500];
-  float E_Tdep_0to5ns_Positron[2500];
-  float E_Zdep_0to5000mm_Electron[2500];
-  float E_Tdep_0to5ns_Electron[2500];
-  float E_Zdep_0to5000mm_Photon[2500];
-  float E_Tdep_0to5ns_Photon[2500];
-  float E_Zdep_0to5000mm_Pion_p[2500];
-  float E_Tdep_0to5ns_Pion_p[2500];
-  float E_Zdep_0to5000mm_Kion[2500];
-  float E_Tdep_0to5ns_Kion[2500];
-  float E_Zdep_0to5000mm_Neutron[2500];
-  float E_Tdep_0to5ns_Neutron[2500];
-  float E_Zdep_0to5000mm_Proton[2500];
-  float E_Tdep_0to5ns_Proton[2500];
-
-  TH1F *h_phot_lambda_ECAL_f_Ceren;
-  TH1F *h_phot_lambda_ECAL_r_Ceren;
+  TH1F *h_phot_lambda_ECAL_f_collect_Ceren;
+  TH1F *h_phot_lambda_ECAL_r_collect_Ceren;
   TH1F *h_phot_lambda_ECAL_f_produce_Ceren;
   TH1F *h_phot_lambda_ECAL_r_produce_Ceren;
-  TH2F *h_photon_2D_produce_Ceren;
-  TH2F *h_photon_2D_receive_Ceren;
+  //TH2F *h_photon_2D_produce_Ceren;
+  //TH2F *h_photon_2D_receive_Ceren;
 
 
-  TH1F *h_phot_lambda_ECAL_f_Scin;
-  TH1F *h_phot_lambda_ECAL_r_Scin;
+  TH1F *h_phot_lambda_ECAL_f_collect_Scin;
+  TH1F *h_phot_lambda_ECAL_r_collect_Scin;
   TH1F *h_phot_lambda_ECAL_f_produce_Scin;
   TH1F *h_phot_lambda_ECAL_r_produce_Scin;
-  TH2F *h_photon_2D_produce_Scin;
-  TH2F *h_photon_2D_receive_Scin;
+  //TH2F *h_photon_2D_produce_Scin;
+  //TH2F *h_photon_2D_receive_Scin;
 
 };
 

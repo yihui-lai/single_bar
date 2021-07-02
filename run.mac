@@ -9,7 +9,7 @@
 #/gps/particle pi-
 
 #/gps/particle gamma
-/gps/particle mu-
+/gps/particle pi-
 
 /gps/pos/type Plane
 /gps/pos/shape Square
@@ -47,4 +47,4 @@
 #/gps/ang/type iso
 
 
-/run/beamOn 1
+/run/beamOn 5

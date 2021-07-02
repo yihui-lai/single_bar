@@ -63,14 +63,6 @@ CreateTree::CreateTree(TString name)
   this->GetTree()->Branch("depositedEnergyEcalGap", &this->depositedEnergyEcalGap, "depositedEnergyEcalGap/F");
   this->GetTree()->Branch("depositedEnergyEcalDet", &this->depositedEnergyEcalDet, "depositedEnergyEcalDet/F");
   this->GetTree()->Branch("depositedEnergySolenoid", &this->depositedEnergySolenoid, "depositedEnergySolenoid/F");
-/*
-  this->GetTree()->Branch("depositedEnergyECAL_absorb_f_particleID", &this->depositedEnergyECAL_absorb_f_particleID, "depositedEnergyECAL_absorb_f_particleID[8]/F");
-  this->GetTree()->Branch("depositedEnergyECAL_absorb_r_particleID", &this->depositedEnergyECAL_absorb_r_particleID, "depositedEnergyECAL_absorb_r_particleID[8]/F");
-  this->GetTree()->Branch("depositedEnergyECAL_scinti_f_particleID", &this->depositedEnergyECAL_scinti_f_particleID, "depositedEnergyECAL_scinti_f_particleID[8]/F");
-  this->GetTree()->Branch("depositedEnergyECAL_scinti_r_particleID", &this->depositedEnergyECAL_scinti_r_particleID, "depositedEnergyECAL_scinti_r_particleID[8]/F");
-  this->GetTree()->Branch("depositedEnergyECAL_cheren_f_particleID", &this->depositedEnergyECAL_cheren_f_particleID, "depositedEnergyECAL_cheren_f_particleID[8]/F");
-  this->GetTree()->Branch("depositedEnergyECAL_cheren_r_particleID", &this->depositedEnergyECAL_cheren_r_particleID, "depositedEnergyECAL_cheren_r_particleID[8]/F");
-*/
   this->GetTree()->Branch("depositedIonEnergyTotal", &this->depositedIonEnergyTotal, "depositedIonEnergyTotal/F");
   this->GetTree()->Branch("depositedIonEnergyTiming_f", &this->depositedIonEnergyTiming_f, "depositedIonEnergyTiming_f/F");
   this->GetTree()->Branch("depositedIonEnergyTiming_r", &this->depositedIonEnergyTiming_r, "depositedIonEnergyTiming_r/F");
@@ -84,14 +76,6 @@ CreateTree::CreateTree(TString name)
   this->GetTree()->Branch("depositedIonEnergyEcalGap", &this->depositedIonEnergyEcalGap, "depositedIonEnergyEcalGap/F");
   this->GetTree()->Branch("depositedIonEnergyEcalDet", &this->depositedIonEnergyEcalDet, "depositedIonEnergyEcalDet/F");
   this->GetTree()->Branch("depositedIonEnergySolenoid", &this->depositedIonEnergySolenoid, "depositedIonEnergySolenoid/F");
-/*
-  this->GetTree()->Branch("depositedIonEnergyECAL_absorb_f_particleID", &this->depositedIonEnergyECAL_absorb_f_particleID, "depositedIonEnergyECAL_absorb_f_particleID[8]/F");
-  this->GetTree()->Branch("depositedIonEnergyECAL_absorb_r_particleID", &this->depositedIonEnergyECAL_absorb_r_particleID, "depositedIonEnergyECAL_absorb_r_particleID[8]/F");
-  this->GetTree()->Branch("depositedIonEnergyECAL_scinti_f_particleID", &this->depositedIonEnergyECAL_scinti_f_particleID, "depositedIonEnergyECAL_scinti_f_particleID[8]/F");
-  this->GetTree()->Branch("depositedIonEnergyECAL_scinti_r_particleID", &this->depositedIonEnergyECAL_scinti_r_particleID, "depositedIonEnergyECAL_scinti_r_particleID[8]/F");
-  this->GetTree()->Branch("depositedIonEnergyECAL_cheren_f_particleID", &this->depositedIonEnergyECAL_cheren_f_particleID, "depositedIonEnergyECAL_cheren_f_particleID[8]/F");
-  this->GetTree()->Branch("depositedIonEnergyECAL_cheren_r_particleID", &this->depositedIonEnergyECAL_cheren_r_particleID, "depositedIonEnergyECAL_cheren_r_particleID[8]/F");
-*/
   this->GetTree()->Branch("depositedElecEnergyTotal", &this->depositedElecEnergyTotal, "depositedElecEnergyTotal/F");
   this->GetTree()->Branch("depositedElecEnergyTiming_f", &this->depositedElecEnergyTiming_f, "depositedElecEnergyTiming_f/F");
   this->GetTree()->Branch("depositedElecEnergyTiming_r", &this->depositedElecEnergyTiming_r, "depositedElecEnergyTiming_r/F");
@@ -108,44 +92,18 @@ CreateTree::CreateTree(TString name)
 
   //single channels
   this->GetTree()->Branch("Edep_Tracker_layer", &this->Edep_Tracker_layer, "Edep_Tracker_layer[6]/F");
-  this->GetTree()->Branch("Edep_Timing_f_ch", &this->Edep_Timing_f_ch, "Edep_Timing_f_ch[18]/F");
-  this->GetTree()->Branch("Edep_Timing_r_ch", &this->Edep_Timing_r_ch, "Edep_Timing_r_ch[18]/F");
-  this->GetTree()->Branch("Edep_ECAL_f_ch", &this->Edep_ECAL_f_ch, "Edep_ECAL_f_ch[6400]/F");
-  this->GetTree()->Branch("Edep_ECAL_r_ch", &this->Edep_ECAL_r_ch, "Edep_ECAL_r_ch[6400]/F");
+  //this->GetTree()->Branch("Edep_Timing_f_ch", &this->Edep_Timing_f_ch, "Edep_Timing_f_ch[18]/F");
+  //this->GetTree()->Branch("Edep_Timing_r_ch", &this->Edep_Timing_r_ch, "Edep_Timing_r_ch[18]/F");
+  //this->GetTree()->Branch("Edep_ECAL_f_ch", &this->Edep_ECAL_f_ch, "Edep_ECAL_f_ch[6400]/F");
+  //this->GetTree()->Branch("Edep_ECAL_r_ch", &this->Edep_ECAL_r_ch, "Edep_ECAL_r_ch[6400]/F");
 
-  this->GetTree()->Branch("IonEdep_ECAL_f_ch", &this->IonEdep_ECAL_f_ch, "IonEdep_ECAL_f_ch[6400]/F");
-  this->GetTree()->Branch("IonEdep_ECAL_r_ch", &this->IonEdep_ECAL_r_ch, "IonEdep_ECAL_r_ch[6400]/F");
+  //this->GetTree()->Branch("IonEdep_ECAL_f_ch", &this->IonEdep_ECAL_f_ch, "IonEdep_ECAL_f_ch[6400]/F");
+  //this->GetTree()->Branch("IonEdep_ECAL_r_ch", &this->IonEdep_ECAL_r_ch, "IonEdep_ECAL_r_ch[6400]/F");
 
   //Cerenkov photons
   //  this -> GetTree() -> Branch("tot_phot_sci_Timing",        &this->tot_phot_sci_Timing,               "tot_phot_sci_Timing/I");
   this->GetTree()->Branch("tot_phot_cer_Timing_f_total", &this->tot_phot_cer_Timing_f_total, "tot_phot_cer_Timing_f_total/I");
   this->GetTree()->Branch("tot_phot_cer_Timing_r_total", &this->tot_phot_cer_Timing_r_total, "tot_phot_cer_Timing_r_total/I");
-/*
-  this->GetTree()->Branch("tot_phot_cer_ECAL_scinti_f_particleID", &this->tot_phot_cer_ECAL_scinti_f_particleID, "tot_phot_cer_ECAL_scinti_f_particleID[8]/I");
-  this->GetTree()->Branch("tot_phot_cer_ECAL_scinti_r_particleID", &this->tot_phot_cer_ECAL_scinti_r_particleID, "tot_phot_cer_ECAL_scinti_r_particleID[8]/I");
-  this->GetTree()->Branch("tot_phot_cer_ECAL_cheren_f_particleID", &this->tot_phot_cer_ECAL_cheren_f_particleID, "tot_phot_cer_ECAL_cheren_f_particleID[8]/I");
-  this->GetTree()->Branch("tot_phot_cer_ECAL_cheren_r_particleID", &this->tot_phot_cer_ECAL_cheren_r_particleID, "tot_phot_cer_ECAL_cheren_r_particleID[8]/I");
-  this->GetTree()->Branch("tot_phot_cer_HCAL", &this->tot_phot_cer_HCAL, "tot_phot_cer_HCAL/I");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_total", &this->E_Zdep_0to5000mm_total, "E_Zdep_0to5000mm_total[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Pion_n", &this->E_Zdep_0to5000mm_Pion_n, "E_Zdep_0to5000mm_Pion_n[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Positron", &this->E_Zdep_0to5000mm_Positron, "E_Zdep_0to5000mm_Positron[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Electron", &this->E_Zdep_0to5000mm_Electron, "E_Zdep_0to5000mm_Electron[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Photon", &this->E_Zdep_0to5000mm_Photon, "E_Zdep_0to5000mm_Photon[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Pion_p", &this->E_Zdep_0to5000mm_Pion_p, "E_Zdep_0to5000mm_Pion_p[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Kion", &this->E_Zdep_0to5000mm_Kion, "E_Zdep_0to5000mm_Kion[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Neutron", &this->E_Zdep_0to5000mm_Neutron, "E_Zdep_0to5000mm_Neutron[2500]/F");
-  this->GetTree()->Branch("E_Zdep_0to5000mm_Proton", &this->E_Zdep_0to5000mm_Proton, "E_Zdep_0to5000mm_Proton[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_total", &this->E_Tdep_0to5ns_total, "E_Tdep_0to5ns_total[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Pion_n", &this->E_Tdep_0to5ns_Pion_n, "E_Tdep_0to5ns_Pion_n[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Positron", &this->E_Tdep_0to5ns_Positron, "E_Tdep_0to5ns_Positron[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Electron", &this->E_Tdep_0to5ns_Electron, "E_Tdep_0to5ns_Electron[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Photon", &this->E_Tdep_0to5ns_Photon, "E_Tdep_0to5ns_Photon[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Pion_p", &this->E_Tdep_0to5ns_Pion_p, "E_Tdep_0to5ns_Pion_p[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Kion", &this->E_Tdep_0to5ns_Kion, "E_Tdep_0to5ns_Kion[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Neutron", &this->E_Tdep_0to5ns_Neutron, "E_Tdep_0to5ns_Neutron[2500]/F");
-  this->GetTree()->Branch("E_Tdep_0to5ns_Proton", &this->E_Tdep_0to5ns_Proton, "E_Tdep_0to5ns_Proton[2500]/F");
-*/
-
 
 
   //S and C in crystal bar
@@ -161,20 +119,20 @@ CreateTree::CreateTree(TString name)
   this->GetTree()->Branch("SDdetected_rr_C", &this->SDdetected_rr_C, "SDdetected_rr_C/I");
 
   //detected photons 
-  h_phot_lambda_ECAL_f_Scin = new TH1F("h_phot_lambda_ECAL_f_Scin", "", 1250, 0., 1250.);
-  h_phot_lambda_ECAL_r_Scin = new TH1F("h_phot_lambda_ECAL_r_Scin", "", 1250, 0., 1250.);
-  h_phot_lambda_ECAL_f_Ceren = new TH1F("h_phot_lambda_ECAL_f_Ceren", "", 1250, 0., 1250.);
-  h_phot_lambda_ECAL_r_Ceren = new TH1F("h_phot_lambda_ECAL_r_Ceren", "", 1250, 0., 1250.);
+  h_phot_lambda_ECAL_f_collect_Scin = new TH1F("h_phot_lambda_ECAL_f_collect_Scin", "", 1250, 0., 1250.);
+  h_phot_lambda_ECAL_r_collect_Scin = new TH1F("h_phot_lambda_ECAL_r_collect_Scin", "", 1250, 0., 1250.);
+  h_phot_lambda_ECAL_f_collect_Ceren = new TH1F("h_phot_lambda_ECAL_f_collect_Ceren", "", 1250, 0., 1250.);
+  h_phot_lambda_ECAL_r_collect_Ceren = new TH1F("h_phot_lambda_ECAL_r_collect_Ceren", "", 1250, 0., 1250.);
   //generated photons
   h_phot_lambda_ECAL_f_produce_Scin = new TH1F("h_phot_lambda_ECAL_f_produce_Scin", "", 1250, 0., 1250.);
   h_phot_lambda_ECAL_r_produce_Scin = new TH1F("h_phot_lambda_ECAL_r_produce_Scin", "", 1250, 0., 1250.);
   h_phot_lambda_ECAL_f_produce_Ceren = new TH1F("h_phot_lambda_ECAL_f_produce_Ceren", "", 1250, 0., 1250.);
   h_phot_lambda_ECAL_r_produce_Ceren = new TH1F("h_phot_lambda_ECAL_r_produce_Ceren", "", 1250, 0., 1250.);
   //photon position
-  h_photon_2D_produce_Scin = new TH2F("h_photon_2D_produce_Scin", "", 500, -50, 50, 500, 0., 200);
-  h_photon_2D_receive_Scin = new TH2F("h_photon_2D_receive_Scin", "", 500, -50, 50, 500, 0., 200);
-  h_photon_2D_produce_Ceren = new TH2F("h_photon_2D_produce_Ceren", "", 500, -50, 50, 500, 0., 200);
-  h_photon_2D_receive_Ceren = new TH2F("h_photon_2D_receive_Ceren", "", 500, -50, 50, 500, 0., 200);
+  //h_photon_2D_produce_Scin = new TH2F("h_photon_2D_produce_Scin", "", 500, -50, 50, 500, 0., 200);
+  //h_photon_2D_receive_Scin = new TH2F("h_photon_2D_receive_Scin", "", 500, -50, 50, 500, 0., 200);
+  //h_photon_2D_produce_Ceren = new TH2F("h_photon_2D_produce_Ceren", "", 500, -50, 50, 500, 0., 200);
+  //h_photon_2D_receive_Ceren = new TH2F("h_photon_2D_receive_Ceren", "", 500, -50, 50, 500, 0., 200);
 
   this->Clear();
 
@@ -200,19 +158,19 @@ bool CreateTree::Write(TFile *outfile)
 {
   outfile->cd();
   ftree->Write();
-  h_phot_lambda_ECAL_f_Scin->Write();
-  h_phot_lambda_ECAL_r_Scin->Write();
+  h_phot_lambda_ECAL_f_collect_Scin->Write();
+  h_phot_lambda_ECAL_r_collect_Scin->Write();
   h_phot_lambda_ECAL_f_produce_Scin->Write();
   h_phot_lambda_ECAL_r_produce_Scin->Write();
-  h_photon_2D_produce_Scin->Write();
-  h_photon_2D_receive_Scin->Write();
+  //h_photon_2D_produce_Scin->Write();
+  //h_photon_2D_receive_Scin->Write();
 
-  h_phot_lambda_ECAL_f_Ceren->Write();
-  h_phot_lambda_ECAL_r_Ceren->Write();
+  h_phot_lambda_ECAL_f_collect_Ceren->Write();
+  h_phot_lambda_ECAL_r_collect_Ceren->Write();
   h_phot_lambda_ECAL_f_produce_Ceren->Write();
   h_phot_lambda_ECAL_r_produce_Ceren->Write();
-  h_photon_2D_produce_Ceren->Write();
-  h_photon_2D_receive_Ceren->Write();
+  //h_photon_2D_produce_Ceren->Write();
+  //h_photon_2D_receive_Ceren->Write();
 
   return true;
 }
@@ -294,7 +252,7 @@ void CreateTree::Clear()
   SDdetected_ff_C = 0.;
   SDdetected_rr_S = 0.;
   SDdetected_rr_C = 0.; 
-
+/*
   for (int iparticle = 0; iparticle < 8; iparticle++)
   {
     depositedEnergyECAL_absorb_f_particleID[iparticle] = 0.;
@@ -316,7 +274,7 @@ void CreateTree::Clear()
     tot_phot_cer_ECAL_cheren_f_particleID[iparticle] = 0.;
     tot_phot_cer_ECAL_cheren_r_particleID[iparticle] = 0.;
   }
-
+*/
   for (int iLayer = 0; iLayer < 6; iLayer++)
   {
     Edep_Tracker_layer[iLayer] = 0.;
@@ -327,6 +285,7 @@ void CreateTree::Clear()
     Edep_Timing_f_ch[iBar] = 0.;
     Edep_Timing_r_ch[iBar] = 0.;
   }
+/*
   for (int iCh = 0; iCh < 6400; iCh++)
   {
     Edep_ECAL_f_ch[iCh] = 0.;
@@ -336,19 +295,7 @@ void CreateTree::Clear()
     IonEdep_ECAL_r_ch[iCh] = 0.;
 
   }
-
-  for (int iZ = 0; iZ < 2500; iZ++)
-  {
-    E_Zdep_0to5000mm_total[iZ]=0.;
-    E_Zdep_0to5000mm_Pion_n[iZ]=0.;
-    E_Zdep_0to5000mm_Positron[iZ]=0.;
-    E_Zdep_0to5000mm_Electron[iZ]=0.;
-    E_Zdep_0to5000mm_Photon[iZ]=0.;
-    E_Zdep_0to5000mm_Pion_p[iZ]=0.;
-    E_Zdep_0to5000mm_Kion[iZ]=0.;
-    E_Zdep_0to5000mm_Neutron[iZ]=0.;
-    E_Zdep_0to5000mm_Proton[iZ]=0.;
-  }
+*/
 
   for (int i = 0; i < 3; ++i)
   {

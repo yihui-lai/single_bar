@@ -27,7 +27,7 @@
 /vis/viewer/set/viewpointThetaPhi 270 0 deg 
 
 # Specify zoom value:
-/vis/viewer/zoomTo 40
+/vis/viewer/zoomTo 800
 
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe
@@ -54,7 +54,7 @@
 /vis/filtering/trajectories/create/particleFilter
 #/vis/filtering/trajectories/particleFilter-0/add geantino
 /vis/filtering/trajectories/particleFilter-0/add pi-
-#/vis/filtering/trajectories/particleFilter-0/add e-
+/vis/filtering/trajectories/particleFilter-0/add e-
 #/vis/filtering/trajectories/particleFilter-0/add e+
 /vis/filtering/trajectories/particleFilter-0/add mu-
 #/vis/filtering/trajectories/particleFilter-0/add gamma
