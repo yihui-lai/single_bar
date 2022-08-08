@@ -7,7 +7,7 @@
 #include "TGaxis.h"
 #include "TLegend.h"
 #include <TMath.h>
-#include <String.h>
+//#include <String.h>
 #include <iostream>
 #include <utility>
 
@@ -197,7 +197,7 @@ double Get_Nphoton(char *filename, double *N_C, bool is_bgo)
     if (is_bgo)
         sprintf(fname, "1GeV muon (BGO, 1*1*10 cm^{3}, 6*6mm SiPM)");
     else
-        sprintf(fname, "1GeV muon (PWO, 1*1*10 cm^{3}, 6*6mm SiPM)");
+        sprintf(fname, "1GeV muon (PWO, 2.4*2.4*10 cm^{3}, 2.4*2.4mm SiPM)");
 
     TCanvas *c1 = new TCanvas();
     TH1F *hcount5 = new TH1F("hcount5", "", 1000, 0, 1000000);
@@ -315,9 +315,9 @@ double Get_Nphoton(char *filename, double *N_C, bool is_bgo)
     hCeren->Draw("same HIST");
     //cout<<"N_gen: S,"<<hScinti->Integral()<<" C,"<<hCeren->Integral()<<endl;
 
-    TH1F *hCeren_d = (TH1F *)f->Get("h_phot_lambda_ECAL_f_Ceren");
+    TH1F *hCeren_d = (TH1F *)f->Get("h_phot_lambda_ECAL_f_collect_Ceren");
     hCeren_d->Scale(1.0 / num);
-    TH1F *hScinti_d = (TH1F *)f->Get("h_phot_lambda_ECAL_f_Scin");
+    TH1F *hScinti_d = (TH1F *)f->Get("h_phot_lambda_ECAL_f_collect_Scin");
     hScinti_d->Scale(1.0 / num);
     double sfd1 = hScinti_d->GetMaximum();
     double sfd2 = hCeren_d->GetMaximum();
@@ -338,9 +338,9 @@ double Get_Nphoton(char *filename, double *N_C, bool is_bgo)
     //cout<<"max:"<<sf1<<" , "<<sf2<<endl;
 
     hScinti->Scale(1.0 / sf1);
-    hScinti_d->Scale(1.0 / sfd1 / 2);
+    hScinti_d->Scale(1.0 / sfd1 /2);
     hCeren->Scale(1.0 / sf2);
-    hCeren_d->Scale(1.0 / sfd2 / 2);
+    hCeren_d->Scale(1.0 / sfd2 /2);
     hScinti->GetYaxis()->SetRangeUser(0, 2);
     hScinti->GetXaxis()->SetRangeUser(200, 1000);
 
@@ -417,7 +417,9 @@ double Get_Nphoton(char *filename, double *N_C, bool is_bgo)
     N_C[2] = hh[2] * pow(10, hhh[2]);
     N_C[3] = hh[3] * pow(10, hhh[3]);
 
-    N_C[4] = Getratio((TH1F *)f->Get("h_phot_lambda_ECAL_f_Ceren"), false, 300, 380) + Getratio((TH1F *)f->Get("h_phot_lambda_ECAL_f_Ceren"), false, 650, 1000);
+    
+    //N_C[4] = Getratio((TH1F *)f->Get("h_phot_lambda_ECAL_f_collect_Ceren"), false, 300, 380) + Getratio((TH1F *)f->Get("h_phot_lambda_ECAL_f_collect_Ceren"), false, 550, 1000);
+    N_C[4] =  Getratio((TH1F *)f->Get("h_phot_lambda_ECAL_f_collect_Ceren"), false, 550, 1000);
 
     delete c1;
     //delete c;
@@ -427,7 +429,7 @@ double Get_Nphoton(char *filename, double *N_C, bool is_bgo)
 void ana_angle_dependence()
 {
 
-    const int np = 9;
+    const int np = 4;
     double xx[np];
     double curve3[np], curve4[np];
     double curve1[np], curve2[np];
@@ -454,42 +456,42 @@ void ana_angle_dependence()
     */
     for (int i = 0; i < np; i++)
     {
-        xx[i] = i * 10 + 75 - 90;
-        curve1[i] = Get_Nphoton(Form("angle_plot/muon_1GeV_N50_BGO_%idegree_500mm_A10mm_sipm6mm.root", i * 10 + 75), N_C, true);
-        NC40[i] = N_C[2] * N_C[4];
-        cout << "detection coeff: " << N_C[4] << endl;
-        curve2[i] = Get_Nphoton(Form("angle_plot/muon_1GeV_N50_BGO_%idegree_500mm_A50mm_sipm6mm.root", i * 10 + 75), N_C, true);
-        NC120[i] = N_C[2] * N_C[4];
-        cout << "detection coeff: " << N_C[4] << endl;
-        curve3[i] = Get_Nphoton(Form("angle_plot/muon_1GeV_N50_BGO_%idegree_500mm_A100mm_sipm6mm.root", i * 10 + 75), N_C, true);
-        NC200[i] = N_C[2] * N_C[4];
-        cout << "detection coeff: " << N_C[4] << endl;
-        curve4[i] = Get_Nphoton(Form("angle_plot/muon_1GeV_N50_BGO_%idegree_500mm_A150mm_sipm6mm.root", i * 10 + 75), N_C, true);
-        NC280[i] = N_C[2] * N_C[4];
-        cout << "detection coeff: " << N_C[4] << endl;
+        xx[i] = i * 30 + 75 - 90;
+        curve1[i] = Get_Nphoton(Form("test_%i_24_1GeVmuon.root", i * 30 + 75), N_C, false);
+        NC40[i] = N_C[2] * N_C[4] ;
+        cout << N_C[2]<<" "<<N_C[3]<<" detection coeff: " << N_C[4] << endl;
+        //curve2[i] = Get_Nphoton(Form("angle_plot/muon_1GeV_N50_BGO_%idegree_500mm_A50mm_sipm6mm.root", i * 10 + 75), N_C, true);
+        //NC120[i] = N_C[2] * N_C[4];
+        //cout << "detection coeff: " << N_C[4] << endl;
+        //curve3[i] = Get_Nphoton(Form("angle_plot/muon_1GeV_N50_BGO_%idegree_500mm_A100mm_sipm6mm.root", i * 10 + 75), N_C, true);
+        //NC200[i] = N_C[2] * N_C[4];
+        //cout << "detection coeff: " << N_C[4] << endl;
+        //curve4[i] = Get_Nphoton(Form("angle_plot/muon_1GeV_N50_BGO_%idegree_500mm_A150mm_sipm6mm.root", i * 10 + 75), N_C, true);
+        //NC280[i] = N_C[2] * N_C[4];
+        //cout << "detection coeff: " << N_C[4] << endl;
     }
 
     TGraph *gcurve1 = new TGraph(np, xx, curve1);
-    TGraph *gcurve2 = new TGraph(np, xx, curve2);
-    TGraph *gcurve3 = new TGraph(np, xx, curve3);
-    TGraph *gcurve4 = new TGraph(np, xx, curve4);
+    //TGraph *gcurve2 = new TGraph(np, xx, curve2);
+    //TGraph *gcurve3 = new TGraph(np, xx, curve3);
+    //TGraph *gcurve4 = new TGraph(np, xx, curve4);
     gcurve1->SetMarkerStyle(8);
     gcurve1->Draw("APL");
     gcurve1->SetMarkerColor(kBlue);
     gcurve1->SetLineColor(kBlue);
-    gcurve2->Draw("APL");
-    gcurve2->SetMarkerStyle(8);
-    gcurve2->SetMarkerColor(kRed);
-    gcurve2->SetLineColor(kRed);
+    //gcurve2->Draw("APL");
+    //gcurve2->SetMarkerStyle(8);
+    //gcurve2->SetMarkerColor(kRed);
+    //gcurve2->SetLineColor(kRed);
 
-    gcurve3->SetMarkerStyle(22);
-    gcurve3->Draw("APL");
-    gcurve3->SetMarkerColor(kBlue);
-    gcurve3->SetLineColor(kBlue);
-    gcurve4->Draw("APL");
-    gcurve4->SetMarkerStyle(22);
-    gcurve4->SetMarkerColor(kRed);
-    gcurve4->SetLineColor(kRed);
+    //gcurve3->SetMarkerStyle(22);
+    //gcurve3->Draw("APL");
+    //gcurve3->SetMarkerColor(kBlue);
+    //gcurve3->SetLineColor(kBlue);
+    //gcurve4->Draw("APL");
+    //gcurve4->SetMarkerStyle(22);
+    //gcurve4->SetMarkerColor(kRed);
+    //gcurve4->SetLineColor(kRed);
 
     TCanvas *c = new TCanvas();
 
@@ -502,56 +504,56 @@ void ana_angle_dependence()
 
     TMultiGraph *gm = new TMultiGraph();
     gm->Add(gcurve1);
-    gm->Add(gcurve2);
-    gm->Add(gcurve3);
-    gm->Add(gcurve4);
+    //gm->Add(gcurve2);
+    //gm->Add(gcurve3);
+    //gm->Add(gcurve4);
     gm->GetXaxis()->SetTitle("degree");
     gm->GetYaxis()->SetTitle("C/S");
     gm->GetXaxis()->SetLimits(-30, 120);
     gm->GetXaxis()->SetRangeUser(-30, 120);
     gm->GetYaxis()->SetLimits(0, 1);
-    gm->GetYaxis()->SetRangeUser(0, 0.02);
+    gm->GetYaxis()->SetRangeUser(0, 0.4);
     gm->Draw("AP");
 
-    double norm_fc = 8000;
+    double norm_fc = 200;
     for (int i = 0; i < np; i++)
     {
         NC40[i] /= norm_fc;
-        NC120[i] /= norm_fc;
-        NC200[i] /= norm_fc;
-        NC280[i] /= norm_fc;
+        //NC120[i] /= norm_fc;
+        //NC200[i] /= norm_fc;
+        //NC280[i] /= norm_fc;
     }
 
     TGraph *gc40 = new TGraph(np, xx, NC40);
-    TGraph *gc120 = new TGraph(np, xx, NC120);
-    TGraph *gc200 = new TGraph(np, xx, NC200);
-    TGraph *gc280 = new TGraph(np, xx, NC280);
+    //TGraph *gc120 = new TGraph(np, xx, NC120);
+    //TGraph *gc200 = new TGraph(np, xx, NC200);
+    //TGraph *gc280 = new TGraph(np, xx, NC280);
     gc40->SetMarkerStyle(4);
     gc40->Draw("APL");
     gc40->SetMarkerColor(kBlue);
     gc40->SetLineColor(kBlue);
-    gc120->Draw("APL");
-    gc120->SetMarkerStyle(4);
-    gc120->SetMarkerColor(kRed);
-    gc120->SetLineColor(kRed);
+    //gc120->Draw("APL");
+    //gc120->SetMarkerStyle(4);
+    //gc120->SetMarkerColor(kRed);
+    //gc120->SetLineColor(kRed);
 
-    gc200->SetMarkerStyle(32);
-    gc200->Draw("APL");
-    gc200->SetMarkerColor(kBlue);
-    gc200->SetLineColor(kBlue);
-    gc280->Draw("APL");
-    gc280->SetMarkerStyle(32);
-    gc280->SetMarkerColor(kRed);
-    gc280->SetLineColor(kRed);
+    //gc200->SetMarkerStyle(32);
+    //gc200->Draw("APL");
+    //gc200->SetMarkerColor(kBlue);
+    //gc200->SetLineColor(kBlue);
+    //gc280->Draw("APL");
+    //gc280->SetMarkerStyle(32);
+    //gc280->SetMarkerColor(kRed);
+    //gc280->SetLineColor(kRed);
 
-    gcurve1->SetTitle("C/S 10x10mm^{2}");
-    gcurve2->SetTitle("C/S 50x50mm^{2}");
-    gcurve3->SetTitle("C/S 100x100mm^{2}");
-    gcurve4->SetTitle("C/S 150x150mm^{2}");
-    gc200->SetTitle("N_{C_photons} 100x100mm^{2}");
-    gc280->SetTitle("N_{C_photons} 150x150mm^{2}");
-    gc40->SetTitle("N_{C_photons} 10x10mm^{2}");
-    gc120->SetTitle("N_{C_photons} 50x50mm^{2}");
+    gcurve1->SetTitle("C/S 24x24mm^{2}");
+    //gcurve2->SetTitle("C/S 50x50mm^{2}");
+    //gcurve3->SetTitle("C/S 100x100mm^{2}");
+    //gcurve4->SetTitle("C/S 150x150mm^{2}");
+    //gc200->SetTitle("N_{C_photons} 100x100mm^{2}");
+    //gc280->SetTitle("N_{C_photons} 150x150mm^{2}");
+    gc40->SetTitle("N_{C_photons} 24x24mm^{2}");
+    //gc120->SetTitle("N_{C_photons} 50x50mm^{2}");
     /*
      gcurve1->SetTitle("C/S 40mm");
      gcurve2->SetTitle("C/S 120mm");
@@ -563,9 +565,9 @@ void ana_angle_dependence()
     gc280->SetTitle("N_{C_photons} 280mm");
 */
     gm->Add(gc40);
-    gm->Add(gc120);
-    gm->Add(gc200);
-    gm->Add(gc280);
+    //gm->Add(gc120);
+    //gm->Add(gc200);
+    //gm->Add(gc280);
     gm->Draw("AP");
 
     gPad->Update();
@@ -606,7 +608,7 @@ void ana_angle_dependence()
 
     TPaveText *t = new TPaveText(0.35, 0.9, 0.6, 1.0, "brNDC"); // left-up
     //t->AddText(" BGO, area 20*20 mm^{2}");
-    t->AddText(" BGO, Length 500 mm");
+    t->AddText(" PWO, Length 100 mm");
     t->SetTextSize(0.05);
     t->SetBorderSize(0);
     t->SetFillColor(0);
@@ -617,20 +619,20 @@ void ana_angle_dependence()
 
 void ana()
 {
-    //ana_angle_dependence();
+    ana_angle_dependence();
 
-    double N_C[10];
-    Get_Nphoton("bgo_10_10_100//muon_1GeV_N20_BGO_90degree_100mm_A10mm_sipm6mm.root", N_C, true);
+    //double N_C[10];
+    //Get_Nphoton("bgo_10_10_100//muon_1GeV_N20_BGO_90degree_100mm_A10mm_sipm6mm.root", N_C, true);
     //Get_Nphoton("realistic/muon_1GeV_N50_BGO_90degree_40mm_A40mm_sipm6mm.root", N_C, true);
     //TFile* ff=new TFile("bgo_10_10_100//muon_1GeV_N20_BGO_90degree_100mm_A10mm_sipm6mm.root");
-    //C_S((TH1F*) ff->Get("h_phot_lambda_ECAL_f_Ceren"),(TH1F*) ff->Get("h_phot_lambda_ECAL_f_Scin"));
-    //cout<<"S in 300 to 380: "<<Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_Scin"), false, 300, 380)<<endl;
-    //cout<<"S in 650 to 1000: "<<Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_Scin"), false, 650, 1000)<<endl;
-    //cout<<"S in 380 to 650: "<<Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_Scin"), false, 380, 650)<<endl;
+    //C_S((TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Ceren"),(TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Scin"));
+    //cout<<"S in 300 to 380: "<<Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Scin"), false, 300, 380)<<endl;
+    //cout<<"S in 650 to 1000: "<<Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Scin"), false, 650, 1000)<<endl;
+    //cout<<"S in 380 to 650: "<<Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Scin"), false, 380, 650)<<endl;
     
     /*
-    Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_Scin"), false, 300, 380);
-    Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_Scin"), false, 650, 1000);
-    Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_Scin"), false, 380, 650);
+    Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Scin"), false, 300, 380);
+    Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Scin"), false, 650, 1000);
+    Getratio((TH1F*) ff->Get("h_phot_lambda_ECAL_f_collect_Scin"), false, 380, 650);
     */
 }
